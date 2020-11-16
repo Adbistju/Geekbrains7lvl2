@@ -12,6 +12,7 @@ import java.util.Set;
 public class ChatServer implements Server {
     private Set<ClientHandler> clients;
     private AuthenticationService authenticationService;
+    private static final String broadcastNameAllUser = "all";
 
     public ChatServer() {
         try {
@@ -26,6 +27,7 @@ public class ChatServer implements Server {
                 Socket socket = serverSocket.accept();
                 System.out.println("Client accepted: " + socket);
                 new ClientHandler(this, socket);
+                socket.setSoTimeout(120000);
             }
         } catch (IOException e) {
             throw new RuntimeException("SWW", e);
@@ -34,7 +36,20 @@ public class ChatServer implements Server {
 
     @Override
     public synchronized void broadcastMessage(String message) {
-        clients.forEach(client -> client.sendMessage(message));
+        if(message.startsWith("-w")) {
+            String[] credentialValues = message.split("\\s");
+            if(broadcastNameAllUser.equals(credentialValues[1])){
+                clients.forEach(client -> client.sendMessage(messageBuilder(credentialValues)));
+            }
+            for(ClientHandler client : clients){
+                if(client.getName().equals(credentialValues[1])){
+
+
+                    client.sendMessage(messageBuilder(credentialValues));
+                }
+            }
+        }else{
+            clients.forEach(client -> client.sendMessage(message));}
     }
 
     @Override
@@ -58,5 +73,13 @@ public class ChatServer implements Server {
     @Override
     public AuthenticationService getAuthenticationService() {
         return authenticationService;
+    }
+
+    public String messageBuilder(String[] cr){
+        String messagForCurentUser = "";
+        for(int i=2;i<cr.length;i++){
+            messagForCurentUser = messagForCurentUser + cr[i];
+        }
+        return messagForCurentUser;
     }
 }

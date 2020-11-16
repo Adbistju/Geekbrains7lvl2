@@ -13,9 +13,9 @@ public class BasicAuthenticationService implements AuthenticationService {
 
     static {
         users = List.of(
-                new User("n1", "n1@mail.com", "1"),
-                new User("n2", "n2@mail.com", "2"),
-                new User("n3", "n3@mail.com", "3")
+                new User("n1", "1", "11"),
+                new User("n2", "2", "22"),
+                new User("n3", "3", "33")
         );
     }
 

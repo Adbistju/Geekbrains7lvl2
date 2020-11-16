@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ClientHandler {
     private Server server;
@@ -44,6 +45,7 @@ public class ClientHandler {
     }
 
     private void doAuth() {
+        AtomicBoolean authIsOk= new AtomicBoolean(true);
         try {
             while (true) {
                 String credentials = in.readUTF();
@@ -60,12 +62,13 @@ public class ClientHandler {
                     server.getAuthenticationService()
                             .doAuth(credentialValues[1], credentialValues[2])
                             .ifPresentOrElse(
-                                    user -> {
+                                     user -> {
                                         if (!server.isLoggedIn(user.getNickname())) {
                                             sendMessage("cmd auth: Status OK");
                                             name = user.getNickname();
                                             server.broadcastMessage(name + " is logged in.");
                                             server.subscribe(this);
+                                            authIsOk.set(false);
                                         } else {
                                             sendMessage("Current user is already logged in.");
                                         }
@@ -77,6 +80,10 @@ public class ClientHandler {
                                         }
                                     }
                             );
+                    if(!authIsOk.get()){
+                        System.out.println("Сработало!");
+                        return;
+                    }
                 }
             }
         } catch (IOException e) {

@@ -98,10 +98,13 @@ public class ClientHandler {
         try {
             while (true) {
                 String message = in.readUTF();
-                if (message.equals("-exit")) {
+                String[] credentialValues = message.split("\\s");
+                if (credentialValues[0].equals("-exit")) {
+                    System.out.println("user disconnect..");
                     return;
+                }else if (credentialValues[0].equals("-w")) {
+                    server.userMessage(messageBuilder(credentialValues),credentialValues[1]);
                 }
-                server.broadcastMessage(message);
             }
         } catch (IOException e) {
             throw new RuntimeException("SWW", e);
@@ -114,6 +117,14 @@ public class ClientHandler {
         } catch (IOException e) {
             throw new RuntimeException("SWW", e);
         }
+    }
+
+    public String messageBuilder(String[] cr){
+        String messagForCurentUser = "";
+        for(int i=2;i<cr.length;i++){
+            messagForCurentUser = messagForCurentUser + cr[i];
+        }
+        return messagForCurentUser;
     }
 
     @Override

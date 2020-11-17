@@ -36,20 +36,19 @@ public class ChatServer implements Server {
 
     @Override
     public synchronized void broadcastMessage(String message) {
-        if(message.startsWith("-w")) {
-            String[] credentialValues = message.split("\\s");
-            if(broadcastNameAllUser.equals(credentialValues[1])){
-                clients.forEach(client -> client.sendMessage(messageBuilder(credentialValues)));
-            }
-            for(ClientHandler client : clients){
-                if(client.getName().equals(credentialValues[1])){
+        clients.forEach(client -> client.sendMessage(message));
+    }
 
-
-                    client.sendMessage(messageBuilder(credentialValues));
-                }
+    @Override
+    public synchronized void userMessage(String message, String curentUser){
+        if(broadcastNameAllUser.equals(curentUser)){
+            broadcastMessage(message);
+        }
+        for(ClientHandler client : clients){
+            if(client.getName().equals(curentUser)){
+                client.sendMessage(message);
             }
-        }else{
-            clients.forEach(client -> client.sendMessage(message));}
+        }
     }
 
     @Override
@@ -73,13 +72,5 @@ public class ChatServer implements Server {
     @Override
     public AuthenticationService getAuthenticationService() {
         return authenticationService;
-    }
-
-    public String messageBuilder(String[] cr){
-        String messagForCurentUser = "";
-        for(int i=2;i<cr.length;i++){
-            messagForCurentUser = messagForCurentUser + cr[i];
-        }
-        return messagForCurentUser;
     }
 }

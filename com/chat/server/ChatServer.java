@@ -1,5 +1,6 @@
 package com.chat.server;
 
+import com.chat.DataSQL.DataSource;
 import com.chat.auth.AuthenticationService;
 import com.chat.auth.BasicAuthenticationService;
 
@@ -21,7 +22,8 @@ public class ChatServer implements Server {
             clients = new HashSet<>();
             authenticationService = new BasicAuthenticationService();
             System.out.println("Server is started up...");
-
+            DataSource.getConnection();
+            System.out.println("DataBase connect...");
             while (true) {
                 System.out.println("Server is listening for clients...");
                 Socket socket = serverSocket.accept();
@@ -73,4 +75,5 @@ public class ChatServer implements Server {
     public AuthenticationService getAuthenticationService() {
         return authenticationService;
     }
+
 }

@@ -53,6 +53,13 @@ public class ClientHandler {
                  * Input credentials sample
                  * "-auth n1@mail.com 1"
                  */
+                if (credentials.startsWith("-reg")) {
+                    String[] credentialValues = credentials.split("\\s");
+                    /**
+                     * String email, String password, String nickName
+                     */
+                    server.getAuthenticationService().doRegist(credentialValues[1],credentialValues[2],credentialValues[3]);
+                }
                 if (credentials.startsWith("-auth")) {
                     /**
                      * After splitting sample
@@ -104,6 +111,8 @@ public class ClientHandler {
                     return;
                 }else if (credentialValues[0].equals("-w")) {
                     server.userMessage(messageBuilder(credentialValues),credentialValues[1]);
+                }else if (credentialValues[0].equals("-chnik")) {
+                    server.getAuthenticationService().doChangeNick(credentialValues[1], credentialValues[2]);
                 }
             }
         } catch (IOException e) {
